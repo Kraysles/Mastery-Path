@@ -62,7 +62,7 @@ body{
 }
 
 h2{ text-align:center; color:var(--accent); margin:0; outline:none; min-height:1.2em; border-bottom:1px solid transparent; transition:0.3s;}
-h2:empty:before{content:"Имя Персонажа"; color:#444;}
+h2:empty:before{content:"Ваше Имя"; color:#444;}
 h2:focus{border-bottom:1px solid var(--accent);}
 
 .class-name-container{ text-align:center; color:#888; margin-bottom:5px; font-size:0.9em; text-transform:uppercase; letter-spacing:2px; display:flex; justify-content:center; gap:5px;}
@@ -133,6 +133,39 @@ canvas{ max-width:100%; height:auto;}
     border:2px solid #444;
 }
 .colorPick:hover{ transform:scale(1.1);}
+
+@media (max-width: 600px) {
+    body {
+        padding: 25px 15px; /* Увеличиваем внешние отступы от краев экрана */
+    }
+
+    .card {
+        padding: 25px; /* Больше пространства внутри самой карточки */
+        gap: 20px;     /* Если используешь flex, добавит просветы */
+    }
+
+    .skill-box {
+        margin-bottom: 25px; /* Больше расстояния между полосками навыков */
+    }
+
+    .input-group {
+        margin-top: 35px;    /* Отделяем зону ввода от списка навыков */
+        padding: 20px;       /* Внутри серой рамки тоже делаем просторнее */
+    }
+
+    .input-row {
+        margin-bottom: 18px; /* Чтобы пальцем было удобнее попадать в инпуты */
+    }
+
+    h2 {
+        margin-bottom: 15px; /* Отступ под именем */
+    }
+
+    .rank-name {
+        margin-bottom: 35px; /* Чтобы ранг (Новичок/Мастер) не слипался с навыками */
+    }
+}
+
 
 </style>
 </head>
