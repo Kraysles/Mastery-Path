@@ -192,6 +192,17 @@ canvas{ max-width:100%; height:auto;}
     #total-val {
         margin-bottom: 4px;
     }
+
+        /* Отступ между заголовком "ОБЩИЙ УРОВЕНЬ" и текстом "Шкала прогресса" */
+    .total-section .skill-header {
+        margin-top: 10px;    /* Тот самый "чуть-чуть" отступ вниз */
+        margin-bottom: 6px;  /* Расстояние от надписи до самой полоски */
+    }
+
+    /* Убедимся, что верхний заголовок не имеет лишних отступов снизу */
+    .total-section div[style*="margin-bottom"] {
+        margin-bottom: 0px !important;
+    }
 }
 
 
