@@ -31,14 +31,16 @@ body{
     padding:40px;
 }
 
-.card{
-    position:relative;
-    background:var(--card);
-    padding:30px;
-    border-radius:20px;
-    width:450px;
-    box-shadow:0 15px 35px rgba(0,0,0,0.7);
-    border:1px solid var(--soft);
+.card {
+    position: relative;
+    background: var(--card);
+    padding: 30px;
+    border-radius: 20px;
+    width: 95%; /* Было 450px, теперь будет подстраиваться под экран */
+    max-width: 450px; /* Больше 450px на мониторе не растянется */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+    border: 1px solid var(--soft);
+    box-sizing: border-box; /* Это важно, чтобы паддинги не раздували ширину */
 }
 
 .settings-btn{
