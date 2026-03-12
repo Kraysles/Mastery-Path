@@ -136,51 +136,61 @@ canvas{ max-width:100%; height:auto;}
 
 @media (max-width: 600px) {
     body {
-        padding: 25px 15px; /* Увеличиваем внешние отступы от краев экрана */
+        padding: 20px 12px; /* Внешние отступы от краев экрана */
     }
 
     .card {
-        padding: 25px; /* Больше пространства внутри самой карточки */
-        gap: 20px;     /* Если используешь flex, добавит просветы */
-    }
-
-    .skill-box {
-        margin-bottom: 25px; /* Больше расстояния между полосками навыков */
-    }
-
-    .input-group {
-        margin-top: 35px;    /* Отделяем зону ввода от списка навыков */
-        padding: 20px;       /* Внутри серой рамки тоже делаем просторнее */
-    }
-
-    .input-row {
-        margin-bottom: 18px; /* Чтобы пальцем было удобнее попадать в инпуты */
+        padding: 25px; 
+        box-sizing: border-box;
     }
 
     h2 {
-        margin-bottom: 15px; /* Отступ под именем */
+        margin-bottom: 12px; /* Отступ под именем персонажа */
     }
 
     .rank-name {
-        margin-bottom: 35px; /* Чтобы ранг (Новичок/Мастер) не слипался с навыками */
+        margin-bottom: 30px; /* Дистанция до первого навыка */
     }
 
-        .skill-box {
-        margin-bottom: 30px; /* Еще больше расстояния между блоками навыков */
+    .skill-box {
+        margin-bottom: 25px; /* Расстояние между блоками навыков */
     }
 
     .skill-header {
-        margin-bottom: 12px; /* Отступ между названием навыка и самой полоской */
+        margin-bottom: 6px; /* Заголовок навыка ближе к его полоске */
     }
 
     .progress-bg {
-        height: 16px;        /* Делаем полоску чуть толще, чтобы по ней было легче попасть взглядом */
-        border-radius: 8px;  /* Скругляем сильнее для красоты */
+        height: 14px;       /* Оптимальная толщина полоски для мобилок */
+        border-radius: 7px;
     }
 
+    .input-group {
+        margin-top: 30px;    /* Отступ до зоны ввода */
+        padding: 20px;
+    }
+
+    .input-row {
+        margin-bottom: 15px; /* Удобство для нажатия пальцем */
+    }
+
+    .stats-btn {
+        margin-top: 15px;    /* Кнопка статистики ближе к инпутам */
+    }
+
+    /* Блок ОБЩЕГО ПРОГРЕССА (подтянут выше) */
     .total-section {
-        margin-top: 40px;    /* Сильнее отделяем общую шкалу от списка навыков */
-        padding-top: 25px;
+        margin-top: 15px;    /* Минимум места после кнопки статистики */
+        padding-top: 15px;   /* Компактная разделительная линия */
+    }
+
+    /* Надпись "ОБЩИЙ УРОВЕНЬ" вплотную к цифрам и шкале */
+    .total-section div[style*="margin-bottom"] {
+        margin-bottom: 2px !important;
+    }
+
+    #total-val {
+        margin-bottom: 4px;
     }
 }
 
