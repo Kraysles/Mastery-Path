@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>My Craft</title>
+
+<style>
+
+:root{
+    --accent:#00d4ff;
+    --bg:#121212;
+    --card:#1e1e1e;
+    --text:#e0e0e0;
+    --soft:#333;
+}
+
+body.light{
+    --bg:#f4f4f4;
+    --card:#ffffff;
+    --text:#111;
+    --soft:#ccc;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    padding:40px;
+}
+
+.card{
+    position:relative;
+    background:var(--card);
+    padding:30px;
+    border-radius:20px;
+    width:450px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.7);
+    border:1px solid var(--soft);
+}
+
+.settings-btn{
+    position:absolute;
+    top:12px;
+    left:12px;
+    font-size:20px;
+    cursor:pointer;
+    opacity:0.6;
+    transition:0.2s;
+}
+
+.settings-btn:hover{
+    opacity:1;
+    transform:rotate(20deg);
+}
+
+h2{ text-align:center; color:var(--accent); margin:0; outline:none; min-height:1.2em; border-bottom:1px solid transparent; transition:0.3s;}
+h2:empty:before{content:"Имя Персонажа"; color:#444;}
+h2:focus{border-bottom:1px solid var(--accent);}
+
+.class-name-container{ text-align:center; color:#888; margin-bottom:5px; font-size:0.9em; text-transform:uppercase; letter-spacing:2px; display:flex; justify-content:center; gap:5px;}
+#char-class{ outline:none; border-bottom:1px solid transparent; min-width:50px;}
+#char-class:empty:before{content:"Введите ремесло"; color:#444;}
+#char-class:focus{border-bottom:1px solid #444; color:#fff;}
+
+.rank-name{ text-align:center; color:#ffcc00; font-weight:bold; margin-bottom:25px; font-size:1.1em;}
+
+.skill-box{ margin-bottom:20px;}
+.skill-header{ display:flex; justify-content:space-between; margin-bottom:8px; font-weight:bold; align-items:center;}
+.edit-btn{ cursor:pointer; font-size:0.8em; opacity:0.5; margin-left:8px; transition:0.2s;}
+.edit-btn:hover{ opacity:1; color:var(--accent);}
+
+.progress-bg{ background:var(--soft); height:10px; border-radius:5px; overflow:hidden;}
+.progress-fill{ background:var(--accent); height:100%; width:0%; transition:width 0.5s ease-out; box-shadow:0 0 10px var(--accent);}
+
+.input-group{
+    background:var(--card);
+    padding:15px;
+    border-radius:12px;
+    margin-top:25px;
+    border:1px dashed var(--soft);
+}
+
+.input-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+
+input{
+    width:70px;
+    background:var(--bg);
+    border:1px solid var(--soft);
+    color:var(--text);
+    padding:5px;
+    border-radius:4px;
+    text-align:center;
+}
+
+button{ width:100%; padding:12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.2s;}
+button:active{ transform:scale(0.98);}
+
+.primary-btn{ background:var(--accent); color:#121212;}
+.stats-btn{ background:#ffcc00; color:#121212; margin-top:15px;}
+
+.new-tpl-btn{ background:none; border:1px solid var(--soft); color:#555; margin-top:20px; font-size:0.8em; padding:8px;}
+.new-tpl-btn:hover{ border-color:#ff4444; color:#ff4444;}
+
+.add-btn{ background:var(--soft); color:#888; border:1px dashed #555; font-size:1.2em; padding:5px; width:100%; margin-top:10px; cursor:pointer;}
+
+.total-section{ margin-top:30px; padding-top:20px; border-top:1px solid var(--soft); text-align:center;}
+#total-fill{ background:#ffcc00; box-shadow:0 0 15px #ffcc00;}
+
+.modal{ background:rgba(0,0,0,0.9); position:fixed; top:0; left:0; width:100%; height:100%; display:none; justify-content:center; align-items:center; z-index:100;}
+.modal-content{ background:var(--card); padding:25px; border-radius:20px; border:1px solid #444; text-align:center;}
+
+.modal-content input{ width:100%; box-sizing:border-box; margin-bottom:10px; text-align:left; padding:10px;}
+
+.stat-val{ color:var(--accent); font-family:monospace;}
+
+.delete-link{ color:#ff4444; font-size:0.8em; cursor:pointer; display:block; margin-top:15px; text-decoration:underline;}
+
+canvas{ max-width:100%; height:auto;}
+
+.colorPick{
+    width:28px;
+    height:28px;
+    border-radius:6px;
+    cursor:pointer;
+    border:2px solid #444;
+}
+.colorPick:hover{ transform:scale(1.1);}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="settings-btn" onclick="openSettings()">⚙</div>
+
+<h2 id="char-name" contenteditable="true" oninput="saveAll()"></h2>
+
+<div class="class-name-container">
+<span>РЕМЕСЛО:</span>
+<span id="char-class" contenteditable="true" oninput="saveAll()"></span>
+</div>
+
+<div class="rank-name" id="rank-display">Новичок</div>
+
+<div id="skills-container"></div>
+<button class="add-btn" onclick="openSkillModal()">+</button>
+
+<div class="input-group" id="inputs-container"></div>
+
+<button class="stats-btn" onclick="openStats()">Статистика</button>
+
+<div class="total-section">
+<div style="font-size:0.8em;margin-bottom:5px;color:#888;">ОБЩИЙ УРОВЕНЬ МАСТЕРСТВА</div>
+
+<div class="skill-header">
+<span>Шкала прогресса:</span>
+<span id="total-val" class="stat-val" style="color:#ffcc00;">0%</span>
+</div>
+
+<div class="progress-bg">
+<div id="total-fill" class="progress-fill"></div>
+</div>
+</div>
+
+<button class="new-tpl-btn" onclick="createNewTemplate()">СОЗДАТЬ НОВЫЙ ШАБЛОН</button>
+
+</div>
+
+<!-- модалка навыков -->
+<div class="modal" id="skill-modal">
+<div class="modal-content" style="width:320px;">
+<h3 id="modal-title">Настройка навыка</h3>
+
+<input type="hidden" id="edit-id">
+
+<input type="text" id="new-name" placeholder="Название навыка">
+<input type="text" id="new-unit" placeholder="Что считаем (напр. Слов)">
+<input type="number" id="new-rate" step="0.0001" placeholder="Рейт (напр. 0.05)">
+
+<button class="primary-btn" style="width:100%" onclick="saveSkill()">Сохранить</button>
+
+<span class="delete-link" id="delete-btn" onclick="deleteSkill()">Удалить навык</span>
+
+<button style="background:none;color:#888;margin-top:10px;cursor:pointer" onclick="closeModal('skill-modal')">Отмена</button>
+</div>
+</div>
+
+<!-- модалка статистики -->
+<div class="modal" id="stats-modal">
+<div class="modal-content" style="width:500px;">
+<h3 style="color:#ffcc00;margin-bottom:10px;">Профиль Мастерства</h3>
+
+<canvas id="radarChart" width="500" height="500"></canvas>
+
+<button class="primary-btn" style="width:100%;margin-top:10px;" onclick="closeModal('stats-modal')">Закрыть</button>
+</div>
+</div>
+
+<!-- модалка настроек -->
+<div class="modal" id="settings-modal">
+<div class="modal-content" style="width:300px">
+
+<h3 style="margin-bottom:15px">Настройки</h3>
+
+<div class="input-row">
+<label>Тема</label>
+<button onclick="toggleTheme()"style="width:80px">Сменить</button>
+</div>
+
+<div style="margin-top:15px;font-size:0.8em;color:#888">Цвет</div>
+
+<div style="display:flex;gap:6px;margin-top:8px;justify-content:center">
+
+<div class="colorPick" style="background:#ff4444" onclick="setColor('#ff4444')"></div>
+<div class="colorPick" style="background:#00d4ff" onclick="setColor('#00d4ff')"></div>
+<div class="colorPick" style="background:#00c853" onclick="setColor('#00c853')"></div>
+<div class="colorPick" style="background:#9c27b0" onclick="setColor('#9c27b0')"></div>
+<div class="colorPick" style="background:#ff66cc" onclick="setColor('#ff66cc')"></div>
+
+</div>
+
+<button class="primary-btn" style="margin-top:15px" onclick="closeModal('settings-modal')">Закрыть</button>
+
+</div>
+</div>
+
+<script>
+
+let skills = JSON.parse(localStorage.getItem('rpg_skills')) || [];
+
+function render(){
+
+const sCont=document.getElementById('skills-container');
+const iCont=document.getElementById('inputs-container');
+
+sCont.innerHTML='';
+iCont.innerHTML='';
+
+skills.forEach(skill=>{
+
+let prog=Math.min(skill.count*skill.rate,100);
+
+sCont.innerHTML+=`
+<div class="skill-box">
+<div class="skill-header">
+<div>${skill.name}<span class="edit-btn" onclick="openSkillModal('${skill.id}')">⚙️</span></div>
+<span class="stat-val">${prog.toFixed(2)}</span>
+</div>
+<div class="progress-bg"><div class="progress-fill" style="width:${prog}%"></div></div>
+</div>`;
+
+iCont.innerHTML+=`
+<div class="input-row">
+<label>${skill.unit}:</label>
+<input type="number" id="input-${skill.id}" value="${skill.count}" onchange="updateCount('${skill.id}',this.value)">
+</div>`;
+
+});
+
+updateRank();
+
+document.getElementById('char-name').innerText=localStorage.getItem('rpg_name')||"";
+document.getElementById('char-class').innerText=localStorage.getItem('rpg_class')||"";
+
+}
+
+function createNewTemplate(){
+if(confirm("Это полностью сотрет текущий прогресс и навыки. Продолжить?")){
+localStorage.clear();
+skills=[];
+render();
+document.getElementById('char-name').focus();
+}
+}
+
+function updateCount(id,val){
+let skill=skills.find(s=>s.id===id);
+if(skill){
+skill.count=parseFloat(val)||0;
+saveAll();
+render();
+}
+}
+
+function updateRank(){
+
+let total=skills.length?(skills.reduce((acc,s)=>acc+Math.min(s.count*s.rate,100),0)/skills.length):0;
+
+const ranks=["Новичок","Ученик","Адепт","Эксперт","Мастер"];
+
+document.getElementById('total-val').innerText=total.toFixed(2)+'%';
+document.getElementById('total-fill').style.width=total+'%';
+document.getElementById('rank-display').innerText=ranks[Math.min(Math.floor(total/20.01),4)];
+
+}
+
+function saveAll(){
+localStorage.setItem('rpg_skills',JSON.stringify(skills));
+localStorage.setItem('rpg_name',document.getElementById('char-name').innerText);
+localStorage.setItem('rpg_class',document.getElementById('char-class').innerText);
+}
+
+function openSkillModal(id=null){
+
+const mTitle=document.getElementById('modal-title');
+const delBtn=document.getElementById('delete-btn');
+
+if(id){
+
+let skill=skills.find(s=>s.id===id);
+
+document.getElementById('edit-id').value=id;
+document.getElementById('new-name').value=skill.name;
+document.getElementById('new-unit').value=skill.unit;
+document.getElementById('new-rate').value=skill.rate;
+
+mTitle.innerText="Редактировать";
+delBtn.style.display='block';
+
+}else{
+
+document.getElementById('edit-id').value='';
+document.getElementById('new-name').value='';
+document.getElementById('new-unit').value='';
+document.getElementById('new-rate').value='';
+
+mTitle.innerText="Новый навык";
+delBtn.style.display='none';
+
+}
+
+document.getElementById('skill-modal').style.display='flex';
+
+}
+
+function saveSkill(){
+
+const id=document.getElementById('edit-id').value;
+const name=document.getElementById('new-name').value;
+const unit=document.getElementById('new-unit').value;
+const rate=parseFloat(document.getElementById('new-rate').value);
+
+if(name&&rate){
+
+if(id){
+
+let skill=skills.find(s=>s.id===id);
+skill.name=name;
+skill.unit=unit;
+skill.rate=rate;
+
+}else{
+
+skills.push({
+id:'s'+Date.now(),
+name,
+unit,
+rate,
+count:0
+});
+
+}
+
+saveAll();
+render();
+closeModal('skill-modal');
+
+}
+
+}
+
+function deleteSkill(){
+
+const id=document.getElementById('edit-id').value;
+
+if(confirm('Удалить этот навык?')){
+
+skills=skills.filter(s=>s.id!==id);
+
+saveAll();
+render();
+closeModal('skill-modal');
+
+}
+
+}
+
+function closeModal(id){
+document.getElementById(id).style.display='none';
+}
+
+function openStats(){
+
+if(skills.length<3){
+alert('Нужно минимум 3 навыка для графика');
+return;
+}
+
+document.getElementById('stats-modal').style.display='flex';
+drawRadar();
+
+}
+
+function drawRadar(){
+
+const canvas=document.getElementById('radarChart');
+const ctx=canvas.getContext('2d');
+
+const centerX=canvas.width/2;
+const centerY=canvas.height/2;
+
+const radius=130;
+const numStats=skills.length;
+const angleStep=(Math.PI*2)/numStats;
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ctx.strokeStyle='#333';
+
+for(let j=1;j<=5;j++){
+
+ctx.beginPath();
+
+for(let i=0;i<numStats;i++){
+
+let r=(radius/5)*j;
+
+let x=centerX+r*Math.cos(i*angleStep-Math.PI/2);
+let y=centerY+r*Math.sin(i*angleStep-Math.PI/2);
+
+i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+
+}
+
+ctx.closePath();
+ctx.stroke();
+
+}
+
+ctx.fillStyle='rgba(0,212,255,0.35)';
+ctx.strokeStyle='var(--accent)';
+ctx.lineWidth=3;
+
+ctx.beginPath();
+
+skills.forEach((s,i)=>{
+
+let val=Math.min(s.count*s.rate,100)/100;
+
+let x=centerX+(radius*val)*Math.cos(i*angleStep-Math.PI/2);
+let y=centerY+(radius*val)*Math.sin(i*angleStep-Math.PI/2);
+
+i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+
+});
+
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
+
+ctx.fillStyle='#bbb';
+ctx.font='bold 13px Segoe UI';
+
+skills.forEach((s,i)=>{
+
+let angle=i*angleStep-Math.PI/2;
+
+let x=centerX+(radius+45)*Math.cos(angle);
+let y=centerY+(radius+45)*Math.sin(angle);
+
+ctx.textAlign=(Math.cos(angle)>0.1)?'left':(Math.cos(angle)<-0.1?'right':'center');
+ctx.textBaseline='middle';
+
+ctx.fillText(s.name.toUpperCase(),x,y);
+
+});
+
+}
+
+function setColor(c){
+document.documentElement.style.setProperty('--accent',c);
+localStorage.setItem('rpg_color',c);
+}
+
+function toggleTheme(){
+
+document.body.classList.toggle('light');
+
+localStorage.setItem(
+'rpg_theme',
+document.body.classList.contains('light')?'light':'dark'
+);
+
+}
+
+function loadDesign(){
+
+let c=localStorage.getItem('rpg_color');
+if(c) document.documentElement.style.setProperty('--accent',c);
+
+let t=localStorage.getItem('rpg_theme');
+if(t==='light') document.body.classList.add('light');
+
+}
+
+function openSettings(){
+document.getElementById('settings-modal').style.display='flex';
+}
+
+loadDesign();
+render();
+
+</script>
+
+</body>
+</html>
